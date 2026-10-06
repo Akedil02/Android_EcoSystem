@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.Recycling
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.ecosystem.ui.components.AppIcon
+import com.example.ecosystem.ui.components.Icon as EcoIconSpec
 import com.example.ecosystem.ui.components.SectionHeader
 import com.example.ecosystem.ui.theme.EcoSystemTheme
 import com.example.ecosystem.ui.theme.Spacing
@@ -51,9 +52,11 @@ fun ProfileScreen(
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBackClick, modifier = Modifier.size(48.dp)) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back to trips"
+                        AppIcon(
+                            icon = EcoIconSpec(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                "Back to trips"
+                            )
                         )
                     }
                 },
@@ -65,13 +68,13 @@ fun ProfileScreen(
                 NavigationBarItem(
                     selected = false,
                     onClick = onTripsClick,
-                    icon = { Icon(Icons.Filled.DirectionsCar, contentDescription = null) },
+                    icon = { AppIcon(EcoIconSpec(Icons.Filled.DirectionsCar)) },
                     label = { Text("Trips") }
                 )
                 NavigationBarItem(
                     selected = true,
                     onClick = {},
-                    icon = { Icon(Icons.Filled.Person, contentDescription = null) },
+                    icon = { AppIcon(EcoIconSpec(Icons.Filled.Person)) },
                     label = { Text("Me") }
                 )
             }
@@ -94,9 +97,8 @@ fun ProfileScreen(
                         color = MaterialTheme.colorScheme.secondaryContainer,
                         modifier = Modifier.size(72.dp)
                     ) {
-                        Icon(
-                            Icons.Filled.Person,
-                            contentDescription = "Profile avatar",
+                        AppIcon(
+                            icon = EcoIconSpec(Icons.Filled.Person, "Profile avatar"),
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(Spacing.md)
                         )
@@ -158,12 +160,12 @@ fun ProfileScreen(
             }
             item {
                 ListItem(
-                    leadingContent = { Icon(Icons.Filled.Recycling, contentDescription = null) },
+                    leadingContent = { AppIcon(EcoIconSpec(Icons.Filled.Recycling)) },
                     headlineContent = { Text("Waste Deposit") },
                     supportingContent = { Text("+50 EcoCoins · Today") }
                 )
                 ListItem(
-                    leadingContent = { Icon(Icons.Filled.DirectionsCar, contentDescription = null) },
+                    leadingContent = { AppIcon(EcoIconSpec(Icons.Filled.DirectionsCar)) },
                     headlineContent = { Text("Carpool") },
                     supportingContent = { Text("+30 EcoCoins · Yesterday") }
                 )

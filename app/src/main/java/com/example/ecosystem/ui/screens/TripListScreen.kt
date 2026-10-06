@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -40,6 +39,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ecosystem.data.sampleTrips
+import com.example.ecosystem.ui.components.AppIcon
+import com.example.ecosystem.ui.components.Icon as EcoIconSpec
 import com.example.ecosystem.ui.components.SectionHeader
 import com.example.ecosystem.ui.components.TagChip
 import com.example.ecosystem.ui.components.TripCard
@@ -79,13 +80,13 @@ fun TripListScreen(
                 NavigationBarItem(
                     selected = true,
                     onClick = {},
-                    icon = { Icon(Icons.Filled.DirectionsCar, contentDescription = null) },
+                    icon = { AppIcon(EcoIconSpec(Icons.Filled.DirectionsCar)) },
                     label = { Text("Trips") }
                 )
                 NavigationBarItem(
                     selected = false,
                     onClick = onProfileClick,
-                    icon = { Icon(Icons.Filled.Person, contentDescription = null) },
+                    icon = { AppIcon(EcoIconSpec(Icons.Filled.Person)) },
                     label = { Text("Me") }
                 )
             }
@@ -116,9 +117,8 @@ fun TripListScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.Search,
-                            contentDescription = null
+                        AppIcon(
+                            EcoIconSpec(Icons.Filled.Search),
                         )
                     },
                     placeholder = {
@@ -170,9 +170,8 @@ fun TripListScreen(
                                 .padding(Spacing.lg),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Icon(
-                                imageVector = Icons.Filled.Search,
-                                contentDescription = null,
+                            AppIcon(
+                                icon = EcoIconSpec(Icons.Filled.Search),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(40.dp)
                             )

@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Park
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,9 +49,8 @@ fun TripCard(
             verticalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Filled.DirectionsCar,
-                    contentDescription = null,
+                AppIcon(
+                    icon = Icon(Icons.Filled.DirectionsCar),
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(Spacing.sm))
@@ -65,9 +63,8 @@ fun TripCard(
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Filled.AccessTime,
-                    contentDescription = null,
+                AppIcon(
+                    icon = Icon(Icons.Filled.AccessTime),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp)
                 )
@@ -78,9 +75,8 @@ fun TripCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.width(Spacing.md))
-                Icon(
-                    imageVector = Icons.Filled.Person,
-                    contentDescription = null,
+                AppIcon(
+                    icon = Icon(Icons.Filled.Person),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp)
                 )
@@ -99,9 +95,8 @@ fun TripCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Filled.EventSeat,
-                        contentDescription = null,
+                    AppIcon(
+                        icon = Icon(Icons.Filled.EventSeat),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(18.dp)
                     )
@@ -112,9 +107,8 @@ fun TripCard(
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Filled.Park,
-                        contentDescription = null,
+                    AppIcon(
+                        icon = Icon(Icons.Filled.Park),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(18.dp)
                     )
@@ -136,9 +130,8 @@ fun TripCard(
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
-                Icon(
-                    imageVector = Icons.Filled.ChevronRight,
-                    contentDescription = null,
+                AppIcon(
+                    icon = Icon(Icons.Filled.ChevronRight),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

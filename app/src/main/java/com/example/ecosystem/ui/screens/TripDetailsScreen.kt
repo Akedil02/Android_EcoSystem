@@ -22,7 +22,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +42,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ecosystem.R
 import com.example.ecosystem.data.sampleTrips
+import com.example.ecosystem.ui.components.AppIcon
+import com.example.ecosystem.ui.components.Icon as EcoIconSpec
 import com.example.ecosystem.ui.components.SectionHeader
 import com.example.ecosystem.ui.theme.EcoSystemTheme
 import com.example.ecosystem.ui.theme.Spacing
@@ -64,9 +65,8 @@ fun TripDetailsScreen(
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBackClick, modifier = Modifier.size(48.dp)) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back to trips"
+                        AppIcon(
+                            EcoIconSpec(Icons.AutoMirrored.Filled.ArrowBack, "Back to trips")
                         )
                     }
                 },
@@ -76,9 +76,11 @@ fun TripDetailsScreen(
                         onClick = { favorite = !favorite },
                         modifier = Modifier.size(48.dp)
                     ) {
-                        Icon(
-                            if (favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = if (favorite) "Remove trip from favorites" else "Add trip to favorites",
+                        AppIcon(
+                            icon = EcoIconSpec(
+                                if (favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                                if (favorite) "Remove trip from favorites" else "Add trip to favorites"
+                            ),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -150,20 +152,20 @@ fun TripDetailsScreen(
                     Column {
                         ListItem(
                             leadingContent = {
-                                Icon(Icons.Filled.LocationOn, contentDescription = null)
+                                AppIcon(EcoIconSpec(Icons.Filled.LocationOn))
                             },
                             headlineContent = { Text(trip.pickupPoint) },
                             supportingContent = { Text("Pickup point") }
                         )
                         ListItem(
                             leadingContent = {
-                                Icon(Icons.Filled.LocationOn, contentDescription = null)
+                                AppIcon(EcoIconSpec(Icons.Filled.LocationOn))
                             },
                             headlineContent = { Text(trip.destination) },
                             supportingContent = { Text("Destination") }
                         )
                         ListItem(
-                            leadingContent = { Icon(Icons.Filled.Park, contentDescription = null) },
+                            leadingContent = { AppIcon(EcoIconSpec(Icons.Filled.Park)) },
                             headlineContent = { Text("Driver: " + trip.driver) },
                             supportingContent = {
                                 Text(trip.seats.toString() + " seats open · " +
