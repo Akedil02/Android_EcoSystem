@@ -1,75 +1,83 @@
-# Module1：EcoDrop: Smart Eco Container Tracker
+# KBTU Green Ecosystem
 
-EcoDrop is a smart urban sustainability Android application that connects users with nearby eco-containers to encourage proper waste sorting and recycling[cite: 1]. Users can locate containers, log waste deposits, earn reward points, and access integrated eco-taxi and points shop features[cite: 1].
+A Kotlin Android app prototype for greener travel and campus life at KBTU. The current implementation focuses on the Carpool/Trip flow and uses local sample data; no backend service or API credentials are required.
 
-## Core Functionality List
+## Implemented screens
 
-* User can view a map/list of nearby Eco Containers with real-time fill level indicators.
-* User can record a waste deposit event to earn eco-points.
-* User can create, edit, and delete personal recycling history log entries.
-* App persists container status, accumulated user points, and deposit history locally.
-* App displays a specific visual alert state (e.g., warning badge) when a container reaches 100% full capacity.
-* User can filter containers by accepted waste categories (Plastic, Paper, Glass, E-waste).
-* User can view leaderboard rankings and browse the in-app Points Shop.
+- **Trip List** — the start screen, with 12 sample rides, destination/driver search, category filters, and a friendly empty state.
+- **Trip Details** — opened with a trip ID through Navigation Compose; shows the route illustration, pickup and destination, driver, available seats, CO₂ savings, a favorite toggle, and a local demo join action.
+- **Profile** — sample student profile, EcoCoins, ESG rating, recent activity, and navigation back to Trips.
 
-## Project Folder Structure
+The app uses a custom green Material 3 theme with light and dark color schemes. The design sketches used as references are in [`design/`](design/), especially `carpool.png`, `trip_details.png`, `profile.png`, and `app_navigation.png`.
+
+## Project structure
 
 ```text
-EcoDrop/
-├── app/
-│   ├── build.gradle.kts
-│   └── src/
-│       ├── main/
-│       │   ├── java/com/example/ecodrop/
-│       │   │   └── MainActivity.kt
-│       │   ├── res/
-│       │   │   ├── layout/
-│       │   │   │   └── activity_main.xml
-│       │   │   ├── values/
-│       │   │   │   ├── colors.xml
-│       │   │   │   ├── strings.xml
-│       │   │   │   └── themes.xml
-│       │   │   └── mipmap/
-│       │   └── AndroidManifest.xml
-│       ├── androidTest/
-│       └── test/
-├── gradle/
-│   └── wrapper/
-├── .gitignore
-├── build.gradle.kts
-├── gradle.properties
-├── settings.gradle.kts
-└── README.md
+app/src/main/java/com/example/ecosystem/
+├── MainActivity.kt
+├── data/
+│   ├── SampleTrips.kt
+│   └── model/Trip.kt
+└── ui/
+    ├── components/
+    │   ├── Icon.kt
+    │   ├── SectionHeader.kt
+    │   ├── TagChip.kt
+    │   └── TripCard.kt
+    ├── navigation/AppNavigation.kt
+    ├── screens/
+    │   ├── ProfileScreen.kt
+    │   ├── TripDetailsScreen.kt
+    │   └── TripListScreen.kt
+    └── theme/
+        ├── Color.kt
+        ├── Spacing.kt
+        ├── Theme.kt
+        └── Type.kt
 
+app/src/main/res/drawable/trip_route.xml
+```
 
-***************************************************************************************
-Build and Run Instructions
-Prerequisites
-Android Studio (Ladybug, Jellyfish, or newer)
+## Requirements
 
-JDK 17 or higher
+- Android Studio compatible with Android Gradle Plugin 9.3.2
+- JDK 17 or newer
+- Android SDK Platform 37
+- Internet access for the first Gradle dependency sync
 
-Android SDK API Level 24+
+The project uses the Compose BOM declared in `gradle/libs.versions.toml`, Material 3, Material Icons Core/Extended, and Navigation Compose. Dependency versions are managed through the version catalog and BOM where applicable.
 
-Steps
-Clone the Repository: git@github.com:Akedil02/Android_EcoSystem.git
+## Open and build
 
-Bash
-git clone git@github.com:Akedil02/Android_EcoSystem.git
-Open Project: Android_EcoSystem
+Clone the repository:
 
-Launch Android Studio.
+```bash
+git clone https://github.com/Akedil02/Android_EcoSystem.git
+cd Android_EcoSystem
+```
 
-Click Open and select the cloned EcoDrop project root directory.
+1. Open the repository root folder in Android Studio (the folder containing `settings.gradle.kts`).
+2. Select **File > Sync Project with Gradle Files** and wait for Gradle sync to finish. Install Android SDK Platform 37 if prompted.
+3. Run the `app` configuration on an emulator or Android device.
 
-Gradle Sync:
+Build a debug APK from the repository root:
 
-Wait for Android Studio to automatically download dependencies and build the project indexing.
+```bash
+# macOS / Linux
+./gradlew :app:assembleDebug
 
-If prompted, click Sync Project with Gradle Files.
+# Windows PowerShell or Command Prompt
+gradlew.bat :app:assembleDebug
+```
 
-Run Application:
+Run local unit tests:
 
-Set up an Android Virtual Device (Emulator) or connect a physical Android device with USB Debugging enabled.
+```bash
+# macOS / Linux
+./gradlew :app:testDebugUnitTest
 
-Click the green Run 'app' button in the top toolbar (or press Shift + F10).
+# Windows PowerShell or Command Prompt
+gradlew.bat :app:testDebugUnitTest
+```
+
+The debug APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
