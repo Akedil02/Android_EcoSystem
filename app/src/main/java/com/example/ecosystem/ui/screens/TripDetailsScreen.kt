@@ -30,9 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -41,48 +39,76 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ecosystem.R
-import com.example.ecosystem.data.sampleTrips
+import com.example.ecosystem.data.model.Trip
 import com.example.ecosystem.ui.components.AppIcon
 import com.example.ecosystem.ui.components.Icon as EcoIconSpec
 import com.example.ecosystem.ui.components.SectionHeader
 import com.example.ecosystem.ui.theme.EcoSystemTheme
 import com.example.ecosystem.ui.theme.Spacing
+import com.example.ecosystem.ui.viewmodel.TripListViewModel
+
+data class TripDetailsUiState(
+    val trip: Trip? = null,
+    val isFavorite: Boolean = false,
+    val isJoined: Boolean = false
+)
+
+@Composable
+fun TripDetailsRoute(
+    tripId: Int,
+    viewModel: TripListViewModel,
+    onBackClick: () -> Unit
+) {
+    val listState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState = TripDetailsUiState(
+        trip = viewModel.tripById(tripId),
+        isFavorite = tripId in listState.favoriteTripIds,
+        isJoined = tripId in listState.joinedTripIds
+    )
+    TripDetailsScreen(
+        uiState = uiState,
+        onBackClick = onBackClick,
+        onFavoriteClick = { viewModel.onFavouriteClick(tripId) },
+        onJoinClick = { viewModel.onJoinClick(tripId) }
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TripDetailsScreen(
-    tripId: Int,
+    uiState: TripDetailsUiState,
     onBackClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
+    onJoinClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val trip = sampleTrips.find { it.id == tripId }
-    var favorite by remember { mutableStateOf(false) }
-    var joined by remember { mutableStateOf(false) }
-
+    val trip = uiState.trip
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBackClick, modifier = Modifier.size(48.dp)) {
-                        AppIcon(
-                            EcoIconSpec(Icons.AutoMirrored.Filled.ArrowBack, "Back to trips")
-                        )
+                        AppIcon(EcoIconSpec(Icons.AutoMirrored.Filled.ArrowBack, "Back to trips"))
                     }
                 },
                 title = { Text("Trip Details", style = MaterialTheme.typography.titleLarge) },
                 actions = {
-                    IconButton(
-                        onClick = { favorite = !favorite },
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        AppIcon(
-                            icon = EcoIconSpec(
-                                if (favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                                if (favorite) "Remove trip from favorites" else "Add trip to favorites"
-                            ),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                    if (trip != null) {
+                        IconButton(
+                            onClick = onFavoriteClick,
+                            modifier = Modifier.size(48.dp)
+                        ) {
+                            AppIcon(
+                                icon = EcoIconSpec(
+                                    if (uiState.isFavorite) Icons.Filled.Favorite
+                                    else Icons.Filled.FavoriteBorder,
+                                    if (uiState.isFavorite) "Remove trip from favorites"
+                                    else "Add trip to favorites"
+                                ),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             )
@@ -90,13 +116,14 @@ fun TripDetailsScreen(
         bottomBar = {
             if (trip != null) {
                 Button(
-                    onClick = { joined = !joined },
+                    onClick = onJoinClick,
+                    enabled = !uiState.isJoined,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(Spacing.md)
                         .height(48.dp)
                 ) {
-                    Text(if (joined) "Joined" else "Join Trip")
+                    Text(if (uiState.isJoined) "Joined" else "Join Trip")
                 }
             }
         }
@@ -134,14 +161,14 @@ fun TripDetailsScreen(
                         .clip(RoundedCornerShape(Spacing.md))
                 )
                 Text(
-                    trip.title,
+                    text = trip.title,
                     style = MaterialTheme.typography.headlineSmall,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
                 SectionHeader(
                     title = "Trip overview",
-                    subtitle = trip.category + " · Today, " + trip.time
+                    subtitle = "${trip.category} · Today, ${trip.time}"
                 )
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -151,30 +178,25 @@ fun TripDetailsScreen(
                 ) {
                     Column {
                         ListItem(
-                            leadingContent = {
-                                AppIcon(EcoIconSpec(Icons.Filled.LocationOn))
-                            },
+                            leadingContent = { AppIcon(EcoIconSpec(Icons.Filled.LocationOn)) },
                             headlineContent = { Text(trip.pickupPoint) },
                             supportingContent = { Text("Pickup point") }
                         )
                         ListItem(
-                            leadingContent = {
-                                AppIcon(EcoIconSpec(Icons.Filled.LocationOn))
-                            },
+                            leadingContent = { AppIcon(EcoIconSpec(Icons.Filled.LocationOn)) },
                             headlineContent = { Text(trip.destination) },
                             supportingContent = { Text("Destination") }
                         )
                         ListItem(
                             leadingContent = { AppIcon(EcoIconSpec(Icons.Filled.Park)) },
-                            headlineContent = { Text("Driver: " + trip.driver) },
+                            headlineContent = { Text("Driver: ${trip.driver}") },
                             supportingContent = {
-                                Text(trip.seats.toString() + " seats open · " +
-                                    trip.co2Saved.toString() + " kg CO₂ saved")
+                                Text("${trip.seats} seats open · ${trip.co2Saved} kg CO₂ saved")
                             }
                         )
                     }
                 }
-                if (joined) {
+                if (uiState.isJoined) {
                     Text(
                         "Your seat is saved in this demo.",
                         style = MaterialTheme.typography.bodyMedium,
@@ -186,11 +208,26 @@ fun TripDetailsScreen(
     }
 }
 
+private val previewTrip = Trip(
+    id = 1,
+    title = "Morning ride from Dostyk Avenue to KBTU",
+    driver = "Ayan",
+    time = "08:30",
+    seats = 3,
+    co2Saved = 2.4,
+    category = "University",
+    pickupPoint = "Dostyk Avenue",
+    destination = "KBTU"
+)
+
 @Preview(showBackground = true)
 @Composable
 private fun TripDetailsScreenPreview() {
     EcoSystemTheme {
-        TripDetailsScreen(tripId = 1, onBackClick = {})
+        TripDetailsScreen(
+            uiState = TripDetailsUiState(trip = previewTrip),
+            onBackClick = {}, onFavoriteClick = {}, onJoinClick = {}
+        )
     }
 }
 
@@ -198,6 +235,9 @@ private fun TripDetailsScreenPreview() {
 @Composable
 private fun TripDetailsScreenDarkPreview() {
     EcoSystemTheme(darkTheme = true) {
-        TripDetailsScreen(tripId = 1, onBackClick = {})
+        TripDetailsScreen(
+            uiState = TripDetailsUiState(trip = previewTrip, isFavorite = true),
+            onBackClick = {}, onFavoriteClick = {}, onJoinClick = {}
+        )
     }
 }
