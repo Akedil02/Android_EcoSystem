@@ -39,9 +39,45 @@ import com.example.ecosystem.ui.components.SectionHeader
 import com.example.ecosystem.ui.theme.EcoSystemTheme
 import com.example.ecosystem.ui.theme.Spacing
 
+data class ProfileActivityUiState(
+    val title: String,
+    val detail: String,
+    val isWasteDeposit: Boolean
+)
+
+data class ProfileUiState(
+    val displayName: String,
+    val role: String,
+    val ecoCoins: String,
+    val esgRating: String,
+    val activities: List<ProfileActivityUiState>
+)
+
+@Composable
+fun ProfileRoute(
+    onBackClick: () -> Unit,
+    onTripsClick: () -> Unit
+) {
+    ProfileScreen(
+        uiState = ProfileUiState(
+            displayName = "Akedil",
+            role = "KBTU Student",
+            ecoCoins = "1,250",
+            esgRating = "82/100",
+            activities = listOf(
+                ProfileActivityUiState("Waste Deposit", "+50 EcoCoins · Today", true),
+                ProfileActivityUiState("Carpool", "+30 EcoCoins · Yesterday", false)
+            )
+        ),
+        onBackClick = onBackClick,
+        onTripsClick = onTripsClick
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
+    uiState: ProfileUiState,
     onBackClick: () -> Unit,
     onTripsClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -52,12 +88,7 @@ fun ProfileScreen(
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBackClick, modifier = Modifier.size(48.dp)) {
-                        AppIcon(
-                            icon = EcoIconSpec(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                "Back to trips"
-                            )
-                        )
+                        AppIcon(EcoIconSpec(Icons.AutoMirrored.Filled.ArrowBack, "Back to trips"))
                     }
                 },
                 title = { Text("Profile", style = MaterialTheme.typography.titleLarge) }
@@ -104,16 +135,18 @@ fun ProfileScreen(
                         )
                     }
                     Text(
-                        text = "Akedil",
+                        text = uiState.displayName,
                         modifier = Modifier.padding(top = Spacing.sm),
                         style = MaterialTheme.typography.titleLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = "KBTU Student",
+                        text = uiState.role,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -128,28 +161,16 @@ fun ProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(Spacing.md)
                 ) {
-                    Card(
-                        modifier = Modifier.weight(1f),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
-                        )
-                    ) {
-                        Column(Modifier.padding(Spacing.md)) {
-                            Text("1,250", style = MaterialTheme.typography.titleLarge)
-                            Text("EcoCoins", style = MaterialTheme.typography.bodyMedium)
-                        }
-                    }
-                    Card(
-                        modifier = Modifier.weight(1f),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
-                        )
-                    ) {
-                        Column(Modifier.padding(Spacing.md)) {
-                            Text("82/100", style = MaterialTheme.typography.titleLarge)
-                            Text("ESG Rating", style = MaterialTheme.typography.bodyMedium)
-                        }
-                    }
+                    ImpactCard(
+                        value = uiState.ecoCoins,
+                        label = "EcoCoins",
+                        modifier = Modifier.weight(1f)
+                    )
+                    ImpactCard(
+                        value = uiState.esgRating,
+                        label = "ESG Rating",
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
             item {
@@ -158,27 +179,56 @@ fun ProfileScreen(
                     subtitle = "Your latest steps toward a greener campus"
                 )
             }
-            item {
+            items(uiState.activities.size) { index ->
+                val activity = uiState.activities[index]
                 ListItem(
-                    leadingContent = { AppIcon(EcoIconSpec(Icons.Filled.Recycling)) },
-                    headlineContent = { Text("Waste Deposit") },
-                    supportingContent = { Text("+50 EcoCoins · Today") }
-                )
-                ListItem(
-                    leadingContent = { AppIcon(EcoIconSpec(Icons.Filled.DirectionsCar)) },
-                    headlineContent = { Text("Carpool") },
-                    supportingContent = { Text("+30 EcoCoins · Yesterday") }
+                    leadingContent = {
+                        AppIcon(
+                            EcoIconSpec(
+                                if (activity.isWasteDeposit) Icons.Filled.Recycling
+                                else Icons.Filled.DirectionsCar
+                            )
+                        )
+                    },
+                    headlineContent = { Text(activity.title) },
+                    supportingContent = { Text(activity.detail) }
                 )
             }
         }
     }
 }
 
+@Composable
+private fun ImpactCard(value: String, label: String, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
+        )
+    ) {
+        Column(Modifier.padding(Spacing.md)) {
+            Text(value, style = MaterialTheme.typography.titleLarge)
+            Text(label, style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+private val previewProfile = ProfileUiState(
+    displayName = "Akedil",
+    role = "KBTU Student",
+    ecoCoins = "1,250",
+    esgRating = "82/100",
+    activities = listOf(
+        ProfileActivityUiState("Waste Deposit", "+50 EcoCoins · Today", true),
+        ProfileActivityUiState("Carpool", "+30 EcoCoins · Yesterday", false)
+    )
+)
+
 @Preview(showBackground = true)
 @Composable
 private fun ProfileScreenPreview() {
     EcoSystemTheme {
-        ProfileScreen(onBackClick = {}, onTripsClick = {})
+        ProfileScreen(uiState = previewProfile, onBackClick = {}, onTripsClick = {})
     }
 }
 
@@ -186,6 +236,14 @@ private fun ProfileScreenPreview() {
 @Composable
 private fun ProfileScreenDarkPreview() {
     EcoSystemTheme(darkTheme = true) {
-        ProfileScreen(onBackClick = {}, onTripsClick = {})
+        ProfileScreen(uiState = previewProfile, onBackClick = {}, onTripsClick = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ImpactCardPreview() {
+    EcoSystemTheme {
+        ImpactCard(value = "1,250", label = "EcoCoins")
     }
 }

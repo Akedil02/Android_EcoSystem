@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ecosystem.data.sampleTrips
 import com.example.ecosystem.data.model.Trip
 import com.example.ecosystem.ui.theme.EcoSystemTheme
 import com.example.ecosystem.ui.theme.Spacing
@@ -143,6 +142,19 @@ fun TripCard(
 @Composable
 private fun TripCardPreview() {
     EcoSystemTheme {
-        TripCard(trip = sampleTrips.first(), onClick = {})
+        TripCard(
+            trip = Trip(
+                id = 1,
+                title = "Morning ride from Dostyk Avenue to KBTU",
+                driver = "Ayan",
+                time = "08:30",
+                seats = 3,
+                co2Saved = 2.4,
+                category = "University",
+                pickupPoint = "Dostyk Avenue",
+                destination = "KBTU"
+            ),
+            onClick = {}
+        )
     }
 }

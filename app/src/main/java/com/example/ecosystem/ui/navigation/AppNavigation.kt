@@ -8,9 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.ecosystem.ui.screens.ProfileScreen
-import com.example.ecosystem.ui.screens.TripDetailsScreen
-import com.example.ecosystem.ui.screens.TripListScreen
+import com.example.ecosystem.ui.screens.ProfileRoute
+import com.example.ecosystem.ui.screens.TripDetailsRoute
+import com.example.ecosystem.ui.screens.TripListRoute
+import com.example.ecosystem.ui.viewmodel.TripListViewModel
 
 private object Destinations {
     const val Trips = "trips"
@@ -22,6 +23,7 @@ private object Destinations {
 
 @Composable
 fun AppNavigation(
+    viewModel: TripListViewModel,
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ) {
@@ -31,7 +33,8 @@ fun AppNavigation(
         modifier = modifier
     ) {
         composable(Destinations.Trips) {
-            TripListScreen(
+            TripListRoute(
+                viewModel = viewModel,
                 onTripClick = { tripId ->
                     navController.navigate(Destinations.tripDetails(tripId))
                 },
@@ -47,13 +50,14 @@ fun AppNavigation(
             arguments = listOf(navArgument("tripId") { type = NavType.IntType })
         ) { backStackEntry ->
             val tripId = backStackEntry.arguments?.getInt("tripId") ?: -1
-            TripDetailsScreen(
+            TripDetailsRoute(
                 tripId = tripId,
+                viewModel = viewModel,
                 onBackClick = { navController.popBackStack() }
             )
         }
         composable(Destinations.Profile) {
-            ProfileScreen(
+            ProfileRoute(
                 onBackClick = {
                     if (!navController.popBackStack()) {
                         navController.navigate(Destinations.Trips) {

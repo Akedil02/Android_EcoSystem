@@ -16,7 +16,7 @@ The app uses a custom green Material 3 theme with light and dark color schemes. 
 app/src/main/java/com/example/ecosystem/
 ├── MainActivity.kt
 ├── data/
-│   ├── SampleTrips.kt
+│   ├── TripRepository.kt
 │   └── model/Trip.kt
 └── ui/
     ├── components/
@@ -28,7 +28,9 @@ app/src/main/java/com/example/ecosystem/
     ├── screens/
     │   ├── ProfileScreen.kt
     │   ├── TripDetailsScreen.kt
-    │   └── TripListScreen.kt
+    │   ├── TripListScreen.kt
+    │   └── TripListUiState.kt
+    ├── viewmodel/TripListViewModel.kt
     └── theme/
         ├── Color.kt
         ├── Spacing.kt
@@ -37,6 +39,54 @@ app/src/main/java/com/example/ecosystem/
 
 app/src/main/res/drawable/trip_route.xml
 ```
+
+## SIS4 MVVM architecture
+
+The trip list is the main MVVM flow. `TripRepository` owns the local sample data and provides suspend loading with a short simulated delay. `TripListViewModel` owns filtering and user state; `TripListScreen` only renders the supplied state and calls event lambdas. `TripListRoute` connects the state holder to Compose using lifecycle-aware collection.
+
+```mermaid
+flowchart TD
+    A[MainActivity] --> B[AppNavigation]
+    B --> C[TripListRoute]
+    C -->|collectAsStateWithLifecycle| D[TripListViewModel]
+    D -->|suspend getTrips| E[TripRepository]
+    E -->|List Trip| D
+    D -->|TripListUiState StateFlow| C
+    C -->|uiState and events| F[TripListScreen]
+    F -->|search category favourite join retry| C
+    C --> D
+```
+
+### UI state and event flow
+
+`TripListUiState` is immutable and contains `trips`, `searchQuery`, `selectedCategory`, `favoriteTripIds`, `joinedTripIds`, `isLoading`, and `errorMessage`. `TripListViewModel` exposes it as a read-only `StateFlow`; search, category selection, favourite, join, and retry are handled by ViewModel methods. Loading, content, empty, and error states are represented by the same state model and have dedicated previews in `TripListScreen.kt`.
+
+For example, typing a search query calls `onSearchChange(query)` from the screen event lambda. The ViewModel copies the state with the new query and filtered trips, and the Route observes the updated StateFlow. Filtering stays in `TripListViewModel`, so the screen remains a renderer. Query, category, favourites, and joined trips are held in the Activity-scoped ViewModel and survive configuration changes.
+
+### Activity and ViewModel lifecycle check
+
+`MainActivity` logs `onCreate`, `onStart`, `onResume`, `onPause`, `onStop`, and `onDestroy` under `SIS4Activity`. `TripListViewModel` logs `init` and `onCleared` under `SIS4ViewModel`. After launching the debug build in the `Medium_Phone` emulator and rotating twice, the filtered Logcat output was:
+
+```text
+10-19 07:56:28.734 D SIS4Activity: onCreate
+10-19 07:56:28.952 D SIS4ViewModel: init
+10-19 07:56:29.192 D SIS4Activity: onStart
+10-19 07:56:29.217 D SIS4Activity: onResume
+10-19 07:56:49.642 D SIS4Activity: onPause
+10-19 07:56:49.655 D SIS4Activity: onStop
+10-19 07:56:49.805 D SIS4Activity: onDestroy
+10-19 07:56:49.851 D SIS4Activity: onCreate
+10-19 07:56:49.880 D SIS4Activity: onStart
+10-19 07:56:49.880 D SIS4Activity: onResume
+10-19 07:56:52.756 D SIS4Activity: onPause
+10-19 07:56:52.764 D SIS4Activity: onStop
+10-19 07:56:52.824 D SIS4Activity: onDestroy
+10-19 07:56:52.843 D SIS4Activity: onCreate
+10-19 07:56:52.850 D SIS4Activity: onStart
+10-19 07:56:52.851 D SIS4Activity: onResume
+```
+
+During a configuration change Android destroys and recreates the Activity to reload resources for the new orientation. The Activity-scoped ViewModel is retained by `ViewModelStore`, so its `init` is not repeated and `onCleared` is not called during those rotations. Its in-memory UI state therefore remains available to the new Activity instance. `onCleared` is expected when the Activity finishes or its ViewModel store is permanently cleared.
 
 ## Requirements
 
