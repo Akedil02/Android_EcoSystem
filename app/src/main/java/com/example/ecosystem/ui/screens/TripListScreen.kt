@@ -65,7 +65,8 @@ fun TripListRoute(
         onCategorySelected = viewModel::onCategorySelected,
         onTripClick = onTripClick,
         onProfileClick = onProfileClick,
-        onRetry = viewModel::onRetry
+        onRetry = viewModel::onRetry,
+        onWeatherRetry = viewModel::onWeatherRetry
     )
 }
 
@@ -78,6 +79,7 @@ fun TripListScreen(
     onTripClick: (Int) -> Unit,
     onProfileClick: () -> Unit,
     onRetry: () -> Unit,
+    onWeatherRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -119,6 +121,32 @@ fun TripListScreen(
                     title = "Today's Trips",
                     subtitle = "Share a ride to KBTU and make every journey greener"
                 )
+            }
+            item(key = "weather") {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Spacing.md),
+                        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text("Almaty current weather", style = MaterialTheme.typography.titleMedium)
+                        when {
+                            uiState.weatherLoading -> Text("Loading live weather…")
+                            uiState.weatherError != null -> {
+                                Text(uiState.weatherError, color = MaterialTheme.colorScheme.error)
+                                Button(onClick = onWeatherRetry) { Text("Retry weather") }
+                            }
+                            else -> Text(uiState.weatherText ?: "Weather unavailable")
+                        }
+                    }
+                }
             }
             item(key = "search") {
                 OutlinedTextField(
@@ -253,7 +281,7 @@ private fun TripListLoadingPreview() {
         TripListScreen(
             uiState = TripListUiState(isLoading = true),
             onSearchChange = {}, onCategorySelected = {}, onTripClick = {},
-            onProfileClick = {}, onRetry = {}
+            onProfileClick = {}, onRetry = {}, onWeatherRetry = {}
         )
     }
 }
@@ -265,7 +293,7 @@ private fun TripListContentPreview() {
         TripListScreen(
             uiState = TripListUiState(trips = listOf(previewTrip), isLoading = false),
             onSearchChange = {}, onCategorySelected = {}, onTripClick = {},
-            onProfileClick = {}, onRetry = {}
+            onProfileClick = {}, onRetry = {}, onWeatherRetry = {}
         )
     }
 }
@@ -277,7 +305,7 @@ private fun TripListEmptyPreview() {
         TripListScreen(
             uiState = TripListUiState(isLoading = false),
             onSearchChange = {}, onCategorySelected = {}, onTripClick = {},
-            onProfileClick = {}, onRetry = {}
+            onProfileClick = {}, onRetry = {}, onWeatherRetry = {}
         )
     }
 }
@@ -289,7 +317,7 @@ private fun TripListErrorPreview() {
         TripListScreen(
             uiState = TripListUiState(isLoading = false, errorMessage = "Please try again."),
             onSearchChange = {}, onCategorySelected = {}, onTripClick = {},
-            onProfileClick = {}, onRetry = {}
+            onProfileClick = {}, onRetry = {}, onWeatherRetry = {}
         )
     }
 }
@@ -301,7 +329,7 @@ private fun TripListDarkPreview() {
         TripListScreen(
             uiState = TripListUiState(trips = listOf(previewTrip), isLoading = false),
             onSearchChange = {}, onCategorySelected = {}, onTripClick = {},
-            onProfileClick = {}, onRetry = {}
+            onProfileClick = {}, onRetry = {}, onWeatherRetry = {}
         )
     }
 }

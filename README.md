@@ -1,12 +1,13 @@
 # KBTU Green Ecosystem
 
-A Kotlin Android app prototype for greener travel and campus life at KBTU. The current implementation focuses on the Carpool/Trip flow and uses local sample data; no backend service or API credentials are required.
+A Kotlin Android app prototype for greener travel and campus life at KBTU. The Carpool/Trip flow uses local sample rides and displays live Almaty weather from Open-Meteo. No API key is required.
 
 ## Implemented screens
 
 - **Trip List** — the start screen, with 12 sample rides, destination/driver search, category filters, and a friendly empty state.
 - **Trip Details** — opened with a trip ID through Navigation Compose; shows the route illustration, pickup and destination, driver, available seats, CO₂ savings, a favorite toggle, and a local demo join action.
 - **Profile** — sample student profile, EcoCoins, ESG rating, recent activity, and navigation back to Trips.
+- **Live weather** — the Trip List requests current Almaty temperature and weather code from Open-Meteo through Retrofit; loading, offline, and HTTP error states have retry UI.
 
 The app uses a custom green Material 3 theme with light and dark color schemes. The design sketches used as references are in [`design/`](design/), especially `carpool.png`, `trip_details.png`, `profile.png`, and `app_navigation.png`.
 

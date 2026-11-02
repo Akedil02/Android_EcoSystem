@@ -9,5 +9,8 @@ data class TripListUiState(
     val favoriteTripIds: Set<Int> = emptySet(),
     val joinedTripIds: Set<Int> = emptySet(),
     val isLoading: Boolean = true,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val weatherText: String? = null,
+    val weatherLoading: Boolean = true,
+    val weatherError: String? = null
 )

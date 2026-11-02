@@ -5,15 +5,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ecosystem.data.TripRepository
 import com.example.ecosystem.data.model.Trip
+import com.example.ecosystem.data.weather.WeatherRepository
 import com.example.ecosystem.ui.screens.TripListUiState
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.IOException
+import retrofit2.HttpException
 
 class TripListViewModel(
-    private val repository: TripRepository = TripRepository()
+    private val repository: TripRepository = TripRepository(),
+    private val weatherRepository: WeatherRepository = WeatherRepository()
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TripListUiState())
     val uiState: StateFlow<TripListUiState> = _uiState.asStateFlow()
@@ -22,6 +27,7 @@ class TripListViewModel(
     init {
         Log.d(TAG, "init")
         refreshTrips()
+        refreshWeather()
     }
 
     fun onSearchChange(query: String) {
@@ -58,6 +64,8 @@ class TripListViewModel(
 
     fun onRetry() = refreshTrips()
 
+    fun onWeatherRetry() = refreshWeather()
+
     fun tripById(tripId: Int): Trip? = repository.findTripById(tripId)
 
     override fun onCleared() {
@@ -87,6 +95,47 @@ class TripListViewModel(
                 }
             }
         }
+    }
+
+    private fun refreshWeather() {
+        _uiState.update { it.copy(weatherLoading = true, weatherError = null) }
+        viewModelScope.launch {
+            try {
+                val weather = weatherRepository.getAlmatyWeather()
+                _uiState.update {
+                    it.copy(
+                        weatherText = "${weather.temperature_2m} °C · ${weatherDescription(weather.weather_code)}",
+                        weatherLoading = false,
+                        weatherError = null
+                    )
+                }
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: IOException) {
+                _uiState.update {
+                    it.copy(weatherLoading = false, weatherError = "No internet connection. Check your connection and retry.")
+                }
+            } catch (exception: HttpException) {
+                _uiState.update {
+                    it.copy(weatherLoading = false, weatherError = "Weather server error (${exception.code()}). Please retry.")
+                }
+            } catch (exception: Exception) {
+                _uiState.update {
+                    it.copy(weatherLoading = false, weatherError = "Unable to load weather. Please retry.")
+                }
+            }
+        }
+    }
+
+    private fun weatherDescription(code: Int): String = when (code) {
+        0 -> "Clear"
+        1, 2, 3 -> "Partly cloudy"
+        45, 48 -> "Foggy"
+        in 51..67 -> "Rain"
+        in 71..77 -> "Snow"
+        in 80..82 -> "Showers"
+        in 95..99 -> "Thunderstorm"
+        else -> "Current weather in Almaty"
     }
 
     private fun filterTrips(query: String, category: String): List<Trip> {
