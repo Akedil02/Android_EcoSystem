@@ -1,4 +1,4 @@
-package com.example.ecosystem.ui.components
+package com.example.ecosystem.presentation.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.ecosystem.ui.theme.EcoSystemTheme
-import com.example.ecosystem.ui.theme.Spacing
+import com.example.ecosystem.presentation.theme.EcoSystemTheme
+import com.example.ecosystem.presentation.theme.Spacing
 
 @Composable
 fun SectionHeader(

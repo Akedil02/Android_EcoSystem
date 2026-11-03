@@ -1,4 +1,7 @@
-package com.example.ecosystem.ui.screens
+package com.example.ecosystem.presentation.screens
+
+import com.example.ecosystem.presentation.TripListUiState
+import com.example.ecosystem.presentation.UiState
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -40,15 +43,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ecosystem.data.model.Trip
-import com.example.ecosystem.ui.components.AppIcon
-import com.example.ecosystem.ui.components.Icon as EcoIconSpec
-import com.example.ecosystem.ui.components.SectionHeader
-import com.example.ecosystem.ui.components.TagChip
-import com.example.ecosystem.ui.components.TripCard
-import com.example.ecosystem.ui.theme.EcoSystemTheme
-import com.example.ecosystem.ui.theme.Spacing
-import com.example.ecosystem.ui.viewmodel.TripListViewModel
+import com.example.ecosystem.domain.model.Trip
+import com.example.ecosystem.presentation.components.AppIcon
+import com.example.ecosystem.presentation.components.Icon as EcoIconSpec
+import com.example.ecosystem.presentation.components.SectionHeader
+import com.example.ecosystem.presentation.components.TagChip
+import com.example.ecosystem.presentation.components.TripCard
+import com.example.ecosystem.presentation.theme.EcoSystemTheme
+import com.example.ecosystem.presentation.theme.Spacing
+import com.example.ecosystem.presentation.viewmodel.TripListViewModel
 
 private val tripCategories = listOf("All", "University", "City", "Morning", "Evening")
 
@@ -82,6 +85,7 @@ fun TripListScreen(
     onWeatherRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val errorMessage = uiState.errorMessage
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -187,7 +191,7 @@ fun TripListScreen(
                     title = "Recommended",
                     subtitle = if (uiState.isLoading) {
                         "Loading local trips"
-                    } else if (uiState.errorMessage != null) {
+                    } else if (errorMessage != null) {
                         "Trips could not be loaded"
                     } else {
                         "${uiState.trips.size} rides available"
@@ -203,11 +207,11 @@ fun TripListScreen(
                     }
                 }
 
-                uiState.errorMessage != null -> item(key = "error") {
+                errorMessage != null -> item(key = "error") {
                     StatusCard {
                         Text("Couldn't load trips", style = MaterialTheme.typography.titleMedium)
                         Text(
-                            text = uiState.errorMessage,
+                            text = errorMessage,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
@@ -279,7 +283,7 @@ private val previewTrip = Trip(
 private fun TripListLoadingPreview() {
     EcoSystemTheme {
         TripListScreen(
-            uiState = TripListUiState(isLoading = true),
+            uiState = TripListUiState(result = UiState.Loading),
             onSearchChange = {}, onCategorySelected = {}, onTripClick = {},
             onProfileClick = {}, onRetry = {}, onWeatherRetry = {}
         )
@@ -291,7 +295,7 @@ private fun TripListLoadingPreview() {
 private fun TripListContentPreview() {
     EcoSystemTheme {
         TripListScreen(
-            uiState = TripListUiState(trips = listOf(previewTrip), isLoading = false),
+            uiState = TripListUiState(trips = listOf(previewTrip), result = UiState.Success(listOf(previewTrip))),
             onSearchChange = {}, onCategorySelected = {}, onTripClick = {},
             onProfileClick = {}, onRetry = {}, onWeatherRetry = {}
         )
@@ -303,7 +307,7 @@ private fun TripListContentPreview() {
 private fun TripListEmptyPreview() {
     EcoSystemTheme {
         TripListScreen(
-            uiState = TripListUiState(isLoading = false),
+            uiState = TripListUiState(result = UiState.Success(emptyList())),
             onSearchChange = {}, onCategorySelected = {}, onTripClick = {},
             onProfileClick = {}, onRetry = {}, onWeatherRetry = {}
         )
@@ -315,7 +319,7 @@ private fun TripListEmptyPreview() {
 private fun TripListErrorPreview() {
     EcoSystemTheme {
         TripListScreen(
-            uiState = TripListUiState(isLoading = false, errorMessage = "Please try again."),
+            uiState = TripListUiState(result = UiState.Error("Please try again.")),
             onSearchChange = {}, onCategorySelected = {}, onTripClick = {},
             onProfileClick = {}, onRetry = {}, onWeatherRetry = {}
         )
@@ -327,7 +331,7 @@ private fun TripListErrorPreview() {
 private fun TripListDarkPreview() {
     EcoSystemTheme(darkTheme = true) {
         TripListScreen(
-            uiState = TripListUiState(trips = listOf(previewTrip), isLoading = false),
+            uiState = TripListUiState(trips = listOf(previewTrip), result = UiState.Success(listOf(previewTrip))),
             onSearchChange = {}, onCategorySelected = {}, onTripClick = {},
             onProfileClick = {}, onRetry = {}, onWeatherRetry = {}
         )

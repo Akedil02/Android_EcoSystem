@@ -1,4 +1,4 @@
-package com.example.ecosystem.ui.navigation
+package com.example.ecosystem.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -8,10 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.ecosystem.ui.screens.ProfileRoute
-import com.example.ecosystem.ui.screens.TripDetailsRoute
-import com.example.ecosystem.ui.screens.TripListRoute
-import com.example.ecosystem.ui.viewmodel.TripListViewModel
+import com.example.ecosystem.presentation.screens.ProfileRoute
+import com.example.ecosystem.presentation.screens.TripDetailsRoute
+import com.example.ecosystem.presentation.screens.TripListRoute
+import com.example.ecosystem.presentation.viewmodel.TripListViewModel
 
 private object Destinations {
     const val Trips = "trips"

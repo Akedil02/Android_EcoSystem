@@ -1,19 +1,20 @@
-package com.example.ecosystem.data
+package com.example.ecosystem.data.repository
 
-import com.example.ecosystem.data.model.Trip
+import com.example.ecosystem.domain.model.Trip
+import com.example.ecosystem.domain.repository.TripRepository
 import kotlinx.coroutines.delay
 
-class TripRepository(
+class TripRepositoryImpl(
     private val responseDelayMillis: Long = 600L,
     var shouldFail: Boolean = false
-) {
-    suspend fun getTrips(): List<Trip> {
+) : TripRepository {
+    override suspend fun getTrips(): List<Trip> {
         delay(responseDelayMillis)
         if (shouldFail) error("Simulated trip loading failure")
         return trips
     }
 
-    fun findTripById(id: Int): Trip? = trips.find { it.id == id }
+    override fun findTripById(id: Int): Trip? = trips.find { it.id == id }
 
     private val trips = listOf(
         Trip(1, "Morning ride from Dostyk Avenue to KBTU", "Ayan", "08:30", 3, 2.4, "University", "Dostyk Avenue", "KBTU"),

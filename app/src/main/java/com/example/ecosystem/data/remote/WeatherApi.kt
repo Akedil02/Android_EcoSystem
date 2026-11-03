@@ -1,4 +1,4 @@
-package com.example.ecosystem.data.weather
+package com.example.ecosystem.data.remote
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

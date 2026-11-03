@@ -1,4 +1,4 @@
-package com.example.ecosystem.ui.screens
+package com.example.ecosystem.presentation.screens
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -33,11 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ecosystem.ui.components.AppIcon
-import com.example.ecosystem.ui.components.Icon as EcoIconSpec
-import com.example.ecosystem.ui.components.SectionHeader
-import com.example.ecosystem.ui.theme.EcoSystemTheme
-import com.example.ecosystem.ui.theme.Spacing
+import com.example.ecosystem.presentation.components.AppIcon
+import com.example.ecosystem.presentation.components.Icon as EcoIconSpec
+import com.example.ecosystem.presentation.components.SectionHeader
+import com.example.ecosystem.presentation.theme.EcoSystemTheme
+import com.example.ecosystem.presentation.theme.Spacing
 
 data class ProfileActivityUiState(
     val title: String,

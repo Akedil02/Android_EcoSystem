@@ -1,4 +1,4 @@
-package com.example.ecosystem.ui.components
+package com.example.ecosystem.presentation.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,9 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ecosystem.data.model.Trip
-import com.example.ecosystem.ui.theme.EcoSystemTheme
-import com.example.ecosystem.ui.theme.Spacing
+import com.example.ecosystem.domain.model.Trip
+import com.example.ecosystem.presentation.theme.EcoSystemTheme
+import com.example.ecosystem.presentation.theme.Spacing
 
 @Composable
 fun TripCard(

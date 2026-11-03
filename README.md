@@ -17,30 +17,23 @@ The app uses a custom green Material 3 theme with light and dark color schemes. 
 app/src/main/java/com/example/ecosystem/
 ├── MainActivity.kt
 ├── data/
-│   ├── TripRepository.kt
-│   └── model/Trip.kt
-└── ui/
+│   ├── remote/WeatherApi.kt
+│   └── repository/
+│       ├── TripRepositoryImpl.kt
+│       └── WeatherRepository.kt
+├── domain/
+│   ├── model/Trip.kt
+│   └── repository/TripRepository.kt
+└── presentation/
     ├── components/
-    │   ├── Icon.kt
-    │   ├── SectionHeader.kt
-    │   ├── TagChip.kt
-    │   └── TripCard.kt
     ├── navigation/AppNavigation.kt
     ├── screens/
-    │   ├── ProfileScreen.kt
-    │   ├── TripDetailsScreen.kt
-    │   ├── TripListScreen.kt
-    │   └── TripListUiState.kt
+    ├── theme/
     ├── viewmodel/TripListViewModel.kt
-    └── theme/
-        ├── Color.kt
-        ├── Spacing.kt
-        ├── Theme.kt
-        └── Type.kt
+    └── TripListUiState.kt
 
 app/src/main/res/drawable/trip_route.xml
 ```
-
 ## SIS4 MVVM architecture
 
 The trip list is the main MVVM flow. `TripRepository` owns the local sample data and provides suspend loading with a short simulated delay. `TripListViewModel` owns filtering and user state; `TripListScreen` only renders the supplied state and calls event lambdas. `TripListRoute` connects the state holder to Compose using lifecycle-aware collection.
@@ -60,7 +53,7 @@ flowchart TD
 
 ### UI state and event flow
 
-`TripListUiState` is immutable and contains `trips`, `searchQuery`, `selectedCategory`, `favoriteTripIds`, `joinedTripIds`, `isLoading`, and `errorMessage`. `TripListViewModel` exposes it as a read-only `StateFlow`; search, category selection, favourite, join, and retry are handled by ViewModel methods. Loading, content, empty, and error states are represented by the same state model and have dedicated previews in `TripListScreen.kt`.
+`TripListUiState` is immutable and contains a sealed `UiState` result (`Loading`, `Success(items)`, or `Error(message)`) plus search, category, favourite, joined-trip, and weather fields. An empty successful result renders the empty screen. `TripListViewModel` exposes state as a read-only `StateFlow`; search, category selection, favourite, join, and retry are handled by ViewModel methods. Loading, content, empty, and error screens have dedicated previews in `TripListScreen.kt`.
 
 For example, typing a search query calls `onSearchChange(query)` from the screen event lambda. The ViewModel copies the state with the new query and filtered trips, and the Route observes the updated StateFlow. Filtering stays in `TripListViewModel`, so the screen remains a renderer. Query, category, favourites, and joined trips are held in the Activity-scoped ViewModel and survive configuration changes.
 

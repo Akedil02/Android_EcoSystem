@@ -6,9 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.ViewModelProvider
-import com.example.ecosystem.ui.navigation.AppNavigation
-import com.example.ecosystem.ui.theme.EcoSystemTheme
-import com.example.ecosystem.ui.viewmodel.TripListViewModel
+import com.example.ecosystem.presentation.navigation.AppNavigation
+import com.example.ecosystem.presentation.theme.EcoSystemTheme
+import com.example.ecosystem.presentation.viewmodel.TripListViewModel
 
 class MainActivity : ComponentActivity() {
     private lateinit var tripListViewModel: TripListViewModel

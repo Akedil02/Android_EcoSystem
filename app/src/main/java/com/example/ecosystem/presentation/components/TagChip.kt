@@ -1,4 +1,4 @@
-package com.example.ecosystem.ui.components
+package com.example.ecosystem.presentation.components
 
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.ecosystem.ui.theme.EcoSystemTheme
+import com.example.ecosystem.presentation.theme.EcoSystemTheme
 
 @Composable
 fun TagChip(

@@ -1,4 +1,4 @@
-package com.example.ecosystem.ui.theme
+package com.example.ecosystem.presentation.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

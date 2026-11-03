@@ -1,12 +1,14 @@
-package com.example.ecosystem.ui.viewmodel
+package com.example.ecosystem.presentation.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.ecosystem.data.TripRepository
-import com.example.ecosystem.data.model.Trip
-import com.example.ecosystem.data.weather.WeatherRepository
-import com.example.ecosystem.ui.screens.TripListUiState
+import com.example.ecosystem.domain.repository.TripRepository
+import com.example.ecosystem.data.repository.TripRepositoryImpl
+import com.example.ecosystem.domain.model.Trip
+import com.example.ecosystem.data.repository.WeatherRepository
+import com.example.ecosystem.presentation.TripListUiState
+import com.example.ecosystem.presentation.UiState
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +19,7 @@ import java.io.IOException
 import retrofit2.HttpException
 
 class TripListViewModel(
-    private val repository: TripRepository = TripRepository(),
+    private val repository: TripRepository = TripRepositoryImpl(),
     private val weatherRepository: WeatherRepository = WeatherRepository()
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TripListUiState())
@@ -32,18 +34,22 @@ class TripListViewModel(
 
     fun onSearchChange(query: String) {
         _uiState.update { state ->
+            val filteredTrips = filterTrips(query, state.selectedCategory)
             state.copy(
                 searchQuery = query,
-                trips = filterTrips(query, state.selectedCategory)
+                trips = filteredTrips,
+                result = if (state.result is UiState.Success) UiState.Success(filteredTrips) else state.result
             )
         }
     }
 
     fun onCategorySelected(category: String) {
         _uiState.update { state ->
+            val filteredTrips = filterTrips(state.searchQuery, category)
             state.copy(
                 selectedCategory = category,
-                trips = filterTrips(state.searchQuery, category)
+                trips = filteredTrips,
+                result = if (state.result is UiState.Success) UiState.Success(filteredTrips) else state.result
             )
         }
     }
@@ -74,23 +80,22 @@ class TripListViewModel(
     }
 
     private fun refreshTrips() {
-        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+        _uiState.update { it.copy(result = UiState.Loading) }
         viewModelScope.launch {
             try {
                 allTrips = repository.getTrips()
                 _uiState.update { state ->
+                    val filteredTrips = filterTrips(state.searchQuery, state.selectedCategory)
                     state.copy(
-                        trips = filterTrips(state.searchQuery, state.selectedCategory),
-                        isLoading = false,
-                        errorMessage = null
+                        trips = filteredTrips,
+                        result = UiState.Success(filteredTrips)
                     )
                 }
             } catch (exception: Exception) {
                 _uiState.update {
                     it.copy(
                         trips = emptyList(),
-                        isLoading = false,
-                        errorMessage = exception.message ?: "Unable to load trips."
+                        result = UiState.Error(exception.message ?: "Unable to load trips.")
                     )
                 }
             }

@@ -1,4 +1,4 @@
-package com.example.ecosystem.ui.components
+package com.example.ecosystem.presentation.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Park
@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.ecosystem.ui.theme.EcoSystemTheme
+import com.example.ecosystem.presentation.theme.EcoSystemTheme
 
 data class Icon(
     val imageVector: ImageVector,

@@ -1,4 +1,4 @@
-package com.example.ecosystem.data.model
+package com.example.ecosystem.domain.model
 
 data class Trip(
     val id: Int,
